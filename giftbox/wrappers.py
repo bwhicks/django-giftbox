@@ -1,12 +1,10 @@
-import os
-import sys
 from django.views.static import serve
 from django.http import HttpResponse
 
-if sys.version_info < (3, 0):
-    import urllib as urllib
-else:
-    import urllib.parse as urllib
+try:
+    import urlparse as parse
+except ImportError:
+    import urllib.parse as parse
 
 
 def send_dev_server(request, filename, **kwargs):
@@ -21,7 +19,7 @@ def send_dev_server(request, filename, **kwargs):
 def xsendfile(request, filename, **kwargs):
 
     base_url = kwargs['sendfile_url']
-    url = urllib.urljoin(base_url, filename)
+    url = parse.urljoin(base_url, filename)
     response = HttpResponse()
 
     response['X-Sendfile'] = url
