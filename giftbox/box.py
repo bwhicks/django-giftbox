@@ -36,21 +36,23 @@ class GiftBox(object):
 
         send_func = self.wrapper
         obj_kwargs = self.kwargs
-
         if not send_func:
-            raise ImproperlyConfigured('You must specify a wrapper before using send.')
+            raise ImproperlyConfigured('You must specify a wrapper before '
+                                       'using send.')
 
         if kwargs:
             obj_kwargs.update(self.kwargs)
 
-        if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
-            raise ImproperlyConfigured('GiftBox requires "doc_root" be set.')
+        if send_func  is send_dev_server:
+            if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
+                raise ImproperlyConfigured('GiftBox requires "doc_root" be set '
+                                       'when using dev server.')
 
-        if 'sendfile_url' not in obj_kwargs or not obj_kwargs['sendfile_url'] \
-                and isinstance(send_func, xsendfile):
-            raise ImproperlyConfigured(
-                'Giftbox requires "sendfile_url" be set when not running '
-                'the development server.'
-            )
+        if send_func is xsendfile:
+            if 'sendfile_url' not in obj_kwargs or not obj_kwargs['sendfile_url']:
+                raise ImproperlyConfigured(
+                    'Giftbox requires "sendfile_url" be set when not running '
+                    'the development server.'
+                )
 
         return send_func(self.request, filepath, **obj_kwargs)

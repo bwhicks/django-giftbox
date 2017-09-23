@@ -1,6 +1,6 @@
 from django.views.static import serve
 from django.http import HttpResponse
-
+import sys
 try:
     import urlparse as parse
 except ImportError:
@@ -24,4 +24,6 @@ def xsendfile(request, filename, **kwargs):
 
     response['X-Sendfile'] = url
     response['X-Accel-Redirect'] = url
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    del response['Content-Type']
     return response
