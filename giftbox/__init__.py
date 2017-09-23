@@ -1,1 +1,1 @@
-from .wrappers.box import GiftBox
+from .box import GiftBox

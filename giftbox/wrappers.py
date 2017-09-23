@@ -18,7 +18,7 @@ def send_dev_server(request, filename, **kwargs):
     return response
 
 
-def send_xfile(request, filename, **kwargs):
+def xsendfile(request, filename, **kwargs):
 
     base_url = kwargs['sendfile_url']
     url = urllib.urljoin(base_url, filename)

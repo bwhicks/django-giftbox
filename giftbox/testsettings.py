@@ -1,4 +1,5 @@
 GIFTBOX_SETTINGS = {
+    'type': 'prod',
     'doc_root': 'foo',
     'sendfile_url': '/protected/'
 }
