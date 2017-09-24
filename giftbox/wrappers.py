@@ -25,7 +25,7 @@ def get_mime(filepath):
     :returns: String with mime type of the file
     """
 
-    return magic.from_buffer(open(filepath).read(1024), mime=True)
+    return magic.from_file(filepath, mime=True)
 
 
 def send_dev_server(request, filename, **kwargs):
@@ -87,7 +87,7 @@ def xsendfile(request, filename, **kwargs):
     # If magic, use it to help out
     if kwargs['use_magic']:
         if GOT_MAGIC:
-            if 'doc_root' not in kwargs and not kwargs['doc_root']:
+            if 'doc_root' not in kwargs or not kwargs['doc_root']:
                 raise ImproperlyConfigured('If using python-magic, '
                                            '"doc_root" required.')
         doc_root = kwargs['doc_root']
