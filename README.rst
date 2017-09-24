@@ -2,11 +2,11 @@
 django-giftbox
 ==============
 
-.. image:: https://www.travis-ci.org/bwhicks/django-giftbox.svg?branch=master
+.. image:: https://www.travis-ci.org/bwhicks/django-giftbox.svg?branch=develop
     :target: https://www.travis-ci.org/bwhicks/django-giftbox
 
-.. image:: https://codecov.io/gh/bwhicks/django-giftbox/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/bwhicks/django-giftbox
+.. image:: https://codecov.io/gh/bwhicks/django-giftbox/branch/develop/graph/badge.svg
+    :target: https://codecov.io/gh/bwhicks/django-giftbox
 
 
 Description
@@ -18,8 +18,8 @@ nginx. This lets users protect files by not allowing them to be downloaded
 directly, but allows Django to programmatically send a redirect and let the
 webserver handle the transaction.
 
-Eventually this package will also provide some pre-slugged views for use with
-a protected file setup.
+Eventually this package will also provide other convenience functions for
+protected file setups and Django.
 
 The current implementation is compatible with Django 1.8+ (tested against LTS
 releases) and py2/3 compatible. The only depedency is Django itself.
@@ -27,7 +27,7 @@ releases) and py2/3 compatible. The only depedency is Django itself.
 Installation
 ------------
 
-Eventually this will be released to pypi. Until such time, however, you can
+Hopefully this will be released to pypi. Until such time, however, you can
 clone from ``master`` or ``develop`` branches.
 
 To install via ``pip``, use something like this::
@@ -79,6 +79,10 @@ specify this before returning the ``HttpResponse`` object, too.
 
 All of this depends on a correct server setup for Apache, nginx, etc. that
 properly creates a protected url that allows sendfile type requests.
+
+The object allows flexible settings of virtually every kwarg at any point. If
+you need to set the ``sendfile_url`` or ``doc_root`` dynamically, either when you
+instantiate the box or when you call ``Giftbox.send()``, you can do that.
 
 Tests
 -----
