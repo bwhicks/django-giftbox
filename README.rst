@@ -2,6 +2,8 @@
 django-giftbox
 ==============
 
+.. image:: https://www.travis-ci.org/bwhicks/django-giftbox.svg?branch=master
+    :target: https://www.travis-ci.org/bwhicks/django-giftbox
 
 Description
 -----------
@@ -46,8 +48,9 @@ where the files you wish to serve via Giftbox are located. For ``prod``, you wil
 need to set the url on which your webserver will listen and answer
 ``Sendfile`` or ``x-accel-http`` headers as ``sendfile_url``.
 
-You can also specify these at run time, but you should at least have ``GIFTBOX_SETTINGS``
-with some sane defaults defaults.
+You can also specify these at run time, but you must least have ``GIFTBOX_SETTINGS``
+with some sane defaults for one of those settings. If you'd like to run this
+on a dev server, you absolutely must define the ``doc_root`` key.
 
 Usage
 -----
@@ -55,8 +58,10 @@ Usage
 In a view or view function, create an instance as follows::
 
   from gitfbox import GiftBox
-  box = GiftBox(request)
-  return box.send('file.name')
+
+  def my_view_func(request):
+    box = GiftBox(request)
+    return box.send('file.name')
 
 
 ``box`` in this case is an instance of ``GiftBox``, which can have its ``self.kwargs``
