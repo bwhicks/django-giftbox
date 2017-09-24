@@ -48,6 +48,10 @@ class GiftBox(object):
         self.kwargs['doc_root'] = gbs['doc_root'] \
             if 'doc_root' in gbs else None
 
+        # Default to using python-magic if installed
+        self.kwargs['use_magic'] = gbs['use_magic'] \
+            if 'use_magic' in gbs else True
+
         self.kwargs.update(kwargs)
 
     def send(self, filename, **kwargs):
@@ -77,11 +81,13 @@ class GiftBox(object):
         if kwargs:
             obj_kwargs.update(kwargs)
 
+        # If no doc_root for dev server, raise an error
         if send_func is send_dev_server:
             if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
                 raise ImproperlyConfigured('GiftBox requires "doc_root" be set '
                                        'when using dev server.')
 
+        # If no send_file for xsendfile, raise an error
         if send_func is xsendfile:
             if 'sendfile_url' not in obj_kwargs or not obj_kwargs['sendfile_url']:
                 raise ImproperlyConfigured(

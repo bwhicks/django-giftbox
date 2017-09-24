@@ -66,10 +66,10 @@ class TestGiftBox(TestCase):
 
     @patch('giftbox.wrappers.HttpResponse')
     @patch('giftbox.wrappers.serve')
-    def test_send(self, mockhttpresponse, testserve):
+    def test_send_no_magic(self, mockhttpresponse, testserve):
         mockhttpresponse = {'Content-Type': ''}
         g = GiftBox(self.request)
-        g.send('foo')
+        g.send('foo', use_magic=False)
         g.wrapper = None
         with pytest.raises(ImproperlyConfigured):
             g.send('foo')
@@ -99,23 +99,23 @@ class TestGiftBox(TestCase):
         g.send('foo', doc_root='foobar')
         assert g.kwargs['doc_root'] == 'foobar'
 
-class TestWrappers(TestCase):
+
+class TestWrappersNoMagic(TestCase):
 
     def setUp(self):
         self.request = MagicMock()
-        self.gbs = settings.GIFTBOX_SETTINGS
 
     @patch('giftbox.wrappers.serve')
     def test_send_dev_server(self, mockserve):
         mockserve.return_value = {'Content-Type': ''}
-        res = send_dev_server(self.request, 'foo', doc_root='bar')
+        res = send_dev_server(self.request, 'foo', doc_root='bar', use_magic=False)
         assert mockserve.called
         assert res['Content-Disposition'] == 'attachment; filename=foo'
 
     @patch('giftbox.wrappers.HttpResponse')
     def test_xsendfile(self, fakeresponse):
         fakeresponse.return_value = {'Content-Type': ''}
-        res = xsendfile(self.request, 'foo', sendfile_url='/bar/')
+        res = xsendfile(self.request, 'foo', sendfile_url='/bar/', use_magic=False)
         assert fakeresponse.called
         fakeresponse.assert_called_with()
         assert res['X-Sendfile'] == '/bar/foo'
