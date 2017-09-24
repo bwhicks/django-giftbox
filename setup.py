@@ -22,9 +22,9 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',
+    version='0.1.0',
 
-    description='A stub setup.py',
+    description='A package that includes sendfile capabilities for Django',
     long_description=long_description,
 
     # The project's main homepage.
@@ -47,7 +47,6 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
@@ -57,13 +56,14 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Framework :: Django',
+        'Framework :: Django :: 1.11',
+        'Framework :: Django :: 1.8',
     ],
 
     # What does your project relate to?
-    keywords='sample setuptools development',
+    keywords='sendfile, x-accel-http, nginx, apache',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'pytest-django', 'pytest-cov', 'mock'],
