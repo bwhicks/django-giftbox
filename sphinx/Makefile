@@ -23,8 +23,12 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+DOC_DIR = ../docs
+
+docdir:
+	@mkdir $(DOC_DIR)
+
 docs: docdir
 	make html
-	mkdir ../docs/
-	cp -r _build/html/* ../docs/
-	git add --force ../docs/
+	cp -r _build/html/* $(DOC_DIR)
+	git add --force $(DOC_DIR)
