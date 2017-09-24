@@ -5,6 +5,10 @@ django-giftbox
 .. image:: https://www.travis-ci.org/bwhicks/django-giftbox.svg?branch=master
     :target: https://www.travis-ci.org/bwhicks/django-giftbox
 
+.. image:: https://codecov.io/gh/bwhicks/django-giftbox/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/bwhicks/django-giftbox
+
+
 Description
 -----------
 
