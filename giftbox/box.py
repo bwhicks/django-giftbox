@@ -41,7 +41,7 @@ class GiftBox(object):
                                        'using send.')
 
         if kwargs:
-            obj_kwargs.update(self.kwargs)
+            obj_kwargs.update(kwargs)
 
         if send_func  is send_dev_server:
             if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:

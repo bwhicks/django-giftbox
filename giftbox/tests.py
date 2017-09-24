@@ -92,6 +92,12 @@ class TestGiftBox(TestCase):
         assert mocksend.called
         mocksend.assert_called_with('foo', bar='baz')
 
+    @patch('giftbox.box.send_dev_server')
+    @patch('giftbox.box.xsendfile')
+    def test_pass_kwargs(self, dev, sendfile):
+        g = GiftBox(self.request)
+        g.send('foo', doc_root='foobar')
+        assert g.kwargs['doc_root'] == 'foobar'
 
 class TestWrappers(TestCase):
 
