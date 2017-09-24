@@ -4,7 +4,7 @@ python:
   - "3.6"
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get -y libmagic-dev
+  - sudo apt-get install -y libmagic-dev
 install:
   - pip install tox-travis
 script: tox
