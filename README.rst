@@ -13,7 +13,7 @@ Description
 -----------
 
 django-giftbox is an app for the Django web framework that provides an easy
-wrapper for xsendfile / x-accel-http functionality in Apache / lighthttp /
+wrapper for X-Sendfile / X-Accel-Redirect functionality in Apache / lighthttp /
 nginx. This lets users protect files by not allowing them to be downloaded
 directly, but allows Django to programmatically send a redirect and let the
 webserver handle the transaction.
@@ -22,7 +22,7 @@ Eventually this package will also provide other convenience functions for
 protected file setups and Django.
 
 The current implementation is compatible with Django 1.8+ (tested against LTS
-releases) and py2/3 compatible. The only depedency is Django itself.
+releases) and py2/3 compatible. The only required dependency is Django itself.
 
 Installation
 ------------
@@ -92,9 +92,11 @@ In a view or view function, create an instance as follows::
 dict modified in any way, as well as having ``kwargs`` passed via its constructor.
 By default it looks to ``settings.py`` for its defaults.
 
-``box.send()`` returns an instance of ``django.httpd.HttpReponse`` with
-appropriate headers sent and ``Content-Type`` cleared so that your web server
-can use its own MIME handling to set the type appropriately. You can manually
+``box.send()`` returns an instance of ``django.httpd.HttpReponse``
+(or ``FileResponse``) with
+appropriate headers set and ``Content-Type`` cleared so that your web server
+can use its own MIME handling to set the type appropriately (unless you use
+the optional ``python-magic`` functionality). You can manually
 specify this before returning the ``HttpResponse`` object, too.
 
 All of this depends on a correct server setup for Apache, nginx, etc. that
