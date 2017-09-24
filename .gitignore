@@ -1,3 +1,7 @@
+# Sphinx documents
+/doc/
+_build/
+
 # sqlite databases
 *.sqlite3
 
