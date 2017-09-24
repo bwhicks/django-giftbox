@@ -1,8 +1,10 @@
 from django.views.static import serve
 from django.http import HttpResponse
 try:
+    # py 2
     import urlparse as parse
 except ImportError:
+    # py 3
     import urllib.parse as parse
 
 
