@@ -54,7 +54,27 @@ need to set the url on which your webserver will listen and answer
 
 You can also specify these at run time, but you must least have ``GIFTBOX_SETTINGS``
 with some sane defaults for one of those settings. If you'd like to run this
-on a dev server, you absolutely must define the ``doc_root`` key.
+on a dev server, you absolutely must define the ``doc_root`` key. An example::
+
+  GIFTBOX_SETTINGS = {
+    'type': 'prod', # will still detect dev server locally
+    'doc_root': '/path/to/protected/files',
+    'sendfile_url': '/protected/url/',
+  }
+
+Optional python-magic
+=====================
+
+If ``libmagic`` and ``python-magic`` are installed, Giftbox will set the
+``Content-Type`` header when passing information to your HTTP server. If you
+don't want this functionality (serving many files quickly or large ones), you can
+disable it and your HTTP server's mime handling will apply::
+
+  GIFTBOX_SETTINGS = {
+    # other settings...
+    'use_magic': False,
+  }
+
 
 Usage
 -----
