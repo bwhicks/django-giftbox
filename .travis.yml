@@ -4,4 +4,4 @@ python:
   - "3.6"
 install:
   - pip install tox-travis codecov
-  script: tox
+script: tox
