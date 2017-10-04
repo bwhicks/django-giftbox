@@ -77,7 +77,7 @@ disable it and your HTTP server's mime handling will apply::
 
 
 Usage
------
+=====
 
 In a view or view function, create an instance as follows::
 
@@ -107,7 +107,7 @@ you need to set the ``sendfile_url`` or ``doc_root`` dynamically, either when yo
 instantiate the box or when you call ``Giftbox.send()``, you can do that.
 
 Tests
------
+=====
 
 All tests can be run using ``tox`` or ``python setup.py pytest``. A sample
 ``testettings.py`` is included in the package for Django compatibility.

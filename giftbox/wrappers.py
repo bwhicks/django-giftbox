@@ -20,9 +20,12 @@ except ImportError:
 def get_mime(filepath):
     """
     Use python-magic to get the mime type of a file.
-    :param filepath: Path to the file to be sniffed.
-    :type filepath: str.
-    :returns: String with mime type of the file
+
+    Args:
+        filepath (str): Path to the file to be sniffed by magic
+
+    Returns:
+        str: Returns a string representing the mime type of the file.
     """
 
     return magic.from_file(filepath, mime=True)
@@ -32,16 +35,15 @@ def send_dev_server(request, filename, **kwargs):
     """
     Send a file using Django's development server.
 
-    :param request: An instance of :class:`django.http.HttpRequest`
-    :type request: object.
-    :param filename: Name of the file to be served.
-    :type filename: str.
-    :param **kwargs: See notes below.
-    :returns: :class:~`django.http.FileResponse` object.
+    Args:
+        request (HttpRequest): An instance of :class:`django.http.HttpRequest`
+        filename (str): name of the file to be served
 
-    :Keyword Arguments:
-        * *doc_root* (``str``) --
-            Valid filepath for Django's development server to 'xsend'
+    Keyword Args:
+        doc_root (str): Valid path for Django's server to 'xsend'
+
+    Returns:
+        FileResponse: An instance of class:`django.http.FileResponse`.
 
     """
     doc_root = kwargs['doc_root']
@@ -61,17 +63,19 @@ def send_dev_server(request, filename, **kwargs):
 def xsendfile(request, filename, **kwargs):
     """
     Send a file using an HTTP X-Sendfile or X-Accel-Redirect response.
-    :param request: An instance of :class:`django.http.HttpRequest`
-    :type request: object.
-    :param filename: Name of the file to be served.
-    :type filename: str.
-    :returns: :class:~`django.http.HttpResponse` object.
 
-    :Keyword Arguments:
-        * *sendfile_url* (``str``) --
-            Xsendfile url to pass as part of http response.
-        * *doc_root* (``str``) --
-            Valid filepath for Django's development server to 'xsend'
+    Args:
+        request (HttpRequest): An instance of :class:`django.http.HttpRequest`
+        filename (str): Name of the file to be served
+
+    Keyword Args:
+
+        sendfile_url (str): Xsendfile url to pass as part of http response.
+        doc_root (str): Valid path to folder containing file, for magic to read
+
+    Returns:
+        HttpResponse: An instance of :class:`django.http.HttpResponse`.
+
     """
 
     base_url = kwargs['sendfile_url']
@@ -84,8 +88,7 @@ def xsendfile(request, filename, **kwargs):
     # Delete default 'Content-Type', which indicates HTML, and let web server
     # try to get it right.
     del response['Content-Type']
-    # If magic, use it to help out
-    print(kwargs)
+    # If magic available and not explicitly disabled, use it to help out
     if kwargs['use_magic']:
         if GOT_MAGIC:
             if 'doc_root' not in kwargs or not kwargs['doc_root']:

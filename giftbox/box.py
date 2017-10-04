@@ -4,22 +4,33 @@ from .wrappers import send_dev_server, xsendfile
 
 
 class GiftBox(object):
-    """Container class for sendfile wrappers"""
+    """Container class for sendfile wrappers
+
+    Attributes:
+        request (HttpRequest): Instance of :class:`django.http.HttpRequest`
+        wrapper (function): Instance of either
+            :func:`~giftbox.wrappers.send_dev_server` or
+            :func:`~giftbox.wrappers.xsendfile`
+        kwargs (dict): A dictionary containing kwargs passed to the object,
+            used by the wrappers to accept settings whether from ``settings.py``
+            or :class:`GiftBox` object on creation.
+    """
+
     def __init__(self, request, **kwargs):
         """
         Create a :class:`GiftBox` instance.
-        :param request: :class:`django.http.HttpRequest` object.
-        :type request: object.
-        :param **kwargs: Keyword arguments.
 
-        :Keyword Arguments:
-            * *sendfile_url* (``str``) --
-                Xsendfile url to pass as part of http response.
-            * *doc_root* (``str``) --
-                Valid filepath for Django's development server to 'xsend' files.
+        Args:
+            request (HttpRequest): Instance of :class:`django.http.HttpRequest`.
+
+        Keyword Args:
+            sendfile_url (str): Xsendfile url to pass as part of http response.
+            doc_root (str): Valid filepath for Django's development server
+                                to 'xsend' files.
         """
 
-        #: Object has access to ``self.request``, ``self.kwargs``, and ``self.wrapper``.
+        # Object has access to ``self.request``, ``self.kwargs``, and
+        # ``self.wrapper``.
         self.request = request
         self.wrapper = None
         self.kwargs = dict()
@@ -58,15 +69,13 @@ class GiftBox(object):
         """
         Return an HTTP Response to send the specified file.
 
-        :param filename: The name of a file to serve.
-        :type filename: str.
-        :param **kwargs: See below.
+        Args:
+            filename (str): The name of a file to serve.
 
-        :Keyword Arguments:
-            * *sendfile_url* (``str``) --
-                Xsendfile url to pass as part of http response.
-            * *doc_root* (``str``) --
-                Valid filepath for Django's development server to 'xsend' files.
+        Keyword Args:
+            sendfile_url (str): Xsendfile url to pass as part of http response.
+            doc_root (str): Valid filepath for Django's development server
+                                to 'xsend' files.
         """
 
         send_func = self.wrapper
