@@ -85,11 +85,12 @@ def xsendfile(request, filename, **kwargs):
     # try to get it right.
     del response['Content-Type']
     # If magic, use it to help out
+    print(kwargs)
     if kwargs['use_magic']:
         if GOT_MAGIC:
             if 'doc_root' not in kwargs or not kwargs['doc_root']:
                 raise ImproperlyConfigured('If using python-magic, '
                                            '"doc_root" required.')
-        doc_root = kwargs['doc_root']
-        response['Content-Type'] = get_mime(os.path.join(doc_root, filename))
+            doc_root = kwargs['doc_root']
+            response['Content-Type'] = get_mime(os.path.join(doc_root, filename))
     return response

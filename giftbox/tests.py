@@ -139,9 +139,11 @@ class TestWrappersMagic(TestCase):
         os.remove('foo.txt')
         assert mime == 'text/plain'
 
+    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.serve')
-    def test_send_dev_server(self, mockserve, mockmime):
+    def test_send_dev_server(self, mockserve, mockmime, mockflag):
+        mockflag.return_value = True
         mockserve.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
         res = send_dev_server(self.request, 'foo', doc_root='bar',
@@ -151,9 +153,12 @@ class TestWrappersMagic(TestCase):
         assert res['Content-Type'] == 'text/foo'
         mockmime.assert_called_with('bar/foo')
 
+    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.HttpResponse')
-    def test_xsendfile(self, fakeresponse, mockmime):
+    def test_xsendfile(self, fakeresponse, mockmime, mockflag):
+
+        mockflag.return_value = True
         fakeresponse.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
         res = xsendfile(self.request, 'foo', sendfile_url='/bar/',

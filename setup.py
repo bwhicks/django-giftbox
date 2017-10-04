@@ -66,10 +66,10 @@ setup(
     keywords='sendfile, x-accel-http, nginx, apache',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-django', 'pytest-cov', 'mock'],
+    tests_require=['pytest', 'pytest-django', 'pytest-cov', 'mock', 'python-magic'],
     install_requires=['django>=1.8'],
     extras_require={
-        'test': ['pytest', 'pytest-django', 'pytest-cov', 'mock'],
+        'test': ['pytest', 'pytest-django', 'pytest-cov', 'mock', 'python-magic'],
     },
 
 )
