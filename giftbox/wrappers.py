@@ -56,7 +56,8 @@ def send_dev_server(request, filename, **kwargs):
             response['Content-Type'] = get_mime(
                 os.path.join(doc_root, filename)
             )
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    response['Content-Disposition'] = ('attachment; filename=%s'
+                                       % filename.split('/')[:-1] 
     return response
 
 
