@@ -57,7 +57,7 @@ def send_dev_server(request, filename, **kwargs):
                 os.path.join(doc_root, filename)
             )
     response['Content-Disposition'] = ('attachment; filename=%s'
-                                       % filename.split('/')[:-1]) 
+                                       % filename.split('/')[-1]) 
     return response
 
 
