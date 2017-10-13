@@ -12,8 +12,8 @@ class GiftBox(object):
             :func:`~giftbox.wrappers.send_dev_server` or
             :func:`~giftbox.wrappers.xsendfile`
         kwargs (dict): A dictionary containing kwargs passed to the object,
-            used by the wrappers to accept settings whether from ``settings.py``
-            or :class:`GiftBox` object on creation.
+            used by the wrappers to accept settings whether
+            from ``settings.py`` or :class:`GiftBox` object on creation.
     """
 
     def __init__(self, request, **kwargs):
@@ -21,7 +21,8 @@ class GiftBox(object):
         Create a :class:`GiftBox` instance.
 
         Args:
-            request (HttpRequest): Instance of :class:`django.http.HttpRequest`.
+            request (HttpRequest): Instance of
+            :class:`django.http.HttpRequest`.
 
         Keyword Args:
             sendfile_url (str): Xsendfile url to pass as part of http response.
@@ -93,12 +94,15 @@ class GiftBox(object):
         # If no doc_root for dev server, raise an error
         if send_func is send_dev_server:
             if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
-                raise ImproperlyConfigured('GiftBox requires "doc_root" be set '
-                                       'when using dev server.')
+                raise ImproperlyConfigured(
+                    'GiftBox requires "doc_root" be set '
+                    'when using dev server.'
+                )
 
         # If no send_file for xsendfile, raise an error
         if send_func is xsendfile:
-            if 'sendfile_url' not in obj_kwargs or not obj_kwargs['sendfile_url']:
+            if 'sendfile_url' not in obj_kwargs or \
+                    not obj_kwargs['sendfile_url']:
                 raise ImproperlyConfigured(
                     'Giftbox requires "sendfile_url" be set when not running '
                     'the development server.'
