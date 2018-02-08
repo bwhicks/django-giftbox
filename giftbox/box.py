@@ -73,7 +73,6 @@ class GiftBox(object):
             filename (str): The name of a file to serve.
 
         Keyword Args:
-            sendfile_url (str): Xsendfile url to pass as part of http response.
             doc_root (str): Valid filepath for Django's development server
                                 to 'xsend' files.
         """
@@ -96,12 +95,5 @@ class GiftBox(object):
                 raise ImproperlyConfigured('GiftBox requires "doc_root" be set '
                                        'when using dev server.')
 
-        # If no send_file for xsendfile, raise an error
-        if send_func is xsendfile:
-            if 'sendfile_url' not in obj_kwargs or not obj_kwargs['sendfile_url']:
-                raise ImproperlyConfigured(
-                    'Giftbox requires "sendfile_url" be set when not running '
-                    'the development server.'
-                )
 
         return send_func(self.request, filename, **obj_kwargs)

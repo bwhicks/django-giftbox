@@ -2,12 +2,6 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 from django.views.static import serve
 from django.http import HttpResponse
-try:
-    # py 2
-    import urlparse as parse
-except ImportError:
-    # py 3
-    import urllib.parse as parse
 
 GOT_MAGIC = False
 try:
@@ -57,13 +51,13 @@ def send_dev_server(request, filename, **kwargs):
                 os.path.join(doc_root, filename)
             )
     response['Content-Disposition'] = ('attachment; filename=%s'
-                                       % filename.split('/')[-1]) 
+                                       % filename.split('/')[-1])
     return response
 
 
 def xsendfile(request, filename, **kwargs):
     """
-    Send a file using an HTTP X-Sendfile or X-Accel-Redirect response.
+    Send a file using an HTTP X-Sendfile.
 
     Args:
         request (HttpRequest): An instance of :class:`django.http.HttpRequest`
@@ -71,7 +65,6 @@ def xsendfile(request, filename, **kwargs):
 
     Keyword Args:
 
-        sendfile_url (str): Xsendfile url to pass as part of http response.
         doc_root (str): Valid path to folder containing file, for magic to read
 
     Returns:
@@ -79,12 +72,9 @@ def xsendfile(request, filename, **kwargs):
 
     """
 
-    base_url = kwargs['sendfile_url']
-    url = parse.urljoin(base_url, filename)
     response = HttpResponse()
 
-    response['X-Sendfile'] = url
-    response['X-Accel-Redirect'] = url
+    response['X-Sendfile'] = filename
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     # Delete default 'Content-Type', which indicates HTML, and let web server
     # try to get it right.
