@@ -13,8 +13,7 @@ Description
 -----------
 
 django-giftbox is an app for the Django web framework that provides an easy
-wrapper for X-Sendfile / X-Accel-Redirect functionality in Apache / lighthttp /
-nginx. This lets users protect files by not allowing them to be downloaded
+wrapper for X-Sendfile functionality in Apache and mod_xsendfile. This lets users protect files by not allowing them to be downloaded
 directly, but allows Django to programmatically send a redirect and let the
 webserver handle the transaction.
 
@@ -43,14 +42,11 @@ There are two 'modes' for giftbox. One of them is ``dev``, and this is the
 default when running using the Django development server. Giftbox should auto-detect
 this and run accordingly.
 
-The other is ``prod``, which assumes you are routing your Django appplication through
-a web server like Apache or nginx.
+The other is ``prod``, which assumes you are routing your Django appplication through Apache.
 
 In Django ``settings.py``, define a dictionary called ``GIFTBOX_SETTINGS``.
 For the development server, you must define ``doc_root``, which is the directory
-where the files you wish to serve via Giftbox are located. For ``prod``, you will
-need to set the url on which your webserver will listen and answer
-``Sendfile`` or ``x-accel-http`` headers as ``sendfile_url``.
+where the files you wish to serve via Giftbox are located.
 
 You can also specify these at run time, but you must least have ``GIFTBOX_SETTINGS``
 with some sane defaults for one of those settings. If you'd like to run this
@@ -59,7 +55,6 @@ on a dev server, you absolutely must define the ``doc_root`` key. An example::
   GIFTBOX_SETTINGS = {
     'type': 'prod', # will still detect dev server locally
     'doc_root': '/path/to/protected/files',
-    'sendfile_url': '/protected/url/',
   }
 
 Optional python-magic
