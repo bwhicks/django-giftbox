@@ -4,12 +4,14 @@ https://packaging.python.org/en/latest/distributing.html
 https://github.com/pypa/sampleproject
 """
 
+# Credit to Kenneth Reitz's remarkably sane
+# https://github.com/kennethreitz/setup.py
+
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-from giftbox import __version__
 
 
 here = path.abspath(path.dirname(__file__))
@@ -18,13 +20,18 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+about = {}
+with open(path.join(here, 'giftbox', '__version__.py')) as f:
+    exec(f.read(), about)
+
+
 setup(
     name='giftbox',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=__version__,
+    version=about['__version__'],
 
     description='A package that includes sendfile capabilities for Django',
     long_description=long_description,
