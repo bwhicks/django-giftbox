@@ -54,9 +54,6 @@ class GiftBox(object):
             elif gbs['type'] == 'prod':
                 self.wrapper = xsendfile
 
-        self.kwargs['sendfile_url'] = gbs['sendfile_url'] \
-            if 'sendfile_url' in gbs else None
-
         self.kwargs['doc_root'] = gbs['doc_root'] \
             if 'doc_root' in gbs else None
 
@@ -66,6 +63,9 @@ class GiftBox(object):
 
         self.kwargs.update(kwargs)
 
+        if not self.kwargs['doc_root']:
+            raise ImproperlyConfigured('You must specify a "doc_root"')
+
     def send(self, filename, **kwargs):
         """
         Return an HTTP Response to send the specified file.
@@ -74,7 +74,6 @@ class GiftBox(object):
             filename (str): The name of a file to serve.
 
         Keyword Args:
-            sendfile_url (str): Xsendfile url to pass as part of http response.
             doc_root (str): Valid filepath for Django's development server
                                 to 'xsend' files.
         """
@@ -91,6 +90,7 @@ class GiftBox(object):
         if kwargs:
             obj_kwargs.update(kwargs)
 
+<<<<<<< HEAD
         # If no doc_root for dev server, raise an error
         if send_func is send_dev_server:
             if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
@@ -108,4 +108,6 @@ class GiftBox(object):
                     'the development server.'
                 )
 
+=======
+>>>>>>> 6b1d2fcef0071b347b3d8f665d4d2829d3f796b7
         return send_func(self.request, filename, **obj_kwargs)

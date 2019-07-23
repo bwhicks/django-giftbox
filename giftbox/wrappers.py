@@ -1,13 +1,6 @@
 import os
-from django.core.exceptions import ImproperlyConfigured
 from django.views.static import serve
 from django.http import HttpResponse
-try:
-    # py 2
-    import urlparse as parse
-except ImportError:
-    # py 3
-    import urllib.parse as parse
 
 GOT_MAGIC = False
 try:
@@ -56,7 +49,8 @@ def send_dev_server(request, filename, **kwargs):
             response['Content-Type'] = get_mime(
                 os.path.join(doc_root, filename)
             )
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    response['Content-Disposition'] = ('attachment; filename=%s'
+                                       % filename.split('/')[-1])
     return response
 
 
@@ -70,7 +64,6 @@ def xsendfile(request, filename, **kwargs):
 
     Keyword Args:
 
-        sendfile_url (str): Xsendfile url to pass as part of http response.
         doc_root (str): Valid path to folder containing file, for magic to read
 
     Returns:
@@ -78,22 +71,15 @@ def xsendfile(request, filename, **kwargs):
 
     """
 
-    base_url = kwargs['sendfile_url']
-    url = parse.urljoin(base_url, filename)
     response = HttpResponse()
-
-    response['X-Sendfile'] = url
-    response['X-Accel-Redirect'] = url
+    path = os.path.join(kwargs['doc_root'], filename)
+    response['X-Sendfile'] = path
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     # Delete default 'Content-Type', which indicates HTML, and let web server
     # try to get it right.
     del response['Content-Type']
     # If magic available and not explicitly disabled, use it to help out
     if kwargs['use_magic']:
-        if GOT_MAGIC:
-            if 'doc_root' not in kwargs or not kwargs['doc_root']:
-                raise ImproperlyConfigured('If using python-magic, '
-                                           '"doc_root" required.')
             doc_root = kwargs['doc_root']
             response['Content-Type'] = get_mime(os.path.join(doc_root, filename))
     return response

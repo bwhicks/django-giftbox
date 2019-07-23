@@ -22,7 +22,6 @@ class TestGiftBox(TestCase):
         assert isinstance(g, GiftBox)
         assert g.request == self.request
         assert g.wrapper == xsendfile
-        assert g.kwargs['sendfile_url'] == '/protected/'
         assert g.kwargs['doc_root'] == 'foo'
 
     def test_force_dev_server(self):
@@ -33,7 +32,7 @@ class TestGiftBox(TestCase):
     def test_no_gbs(self):
         with self.settings(GIFTBOX_SETTINGS=None):
             with pytest.raises(ImproperlyConfigured):
-                g = GiftBox(self.request)
+                GiftBox(self.request)
 
     def test_type(self):
         gbs = self.gbs.copy()
@@ -49,20 +48,17 @@ class TestGiftBox(TestCase):
     def test_assign_none_sendfile_doc_root(self):
         gbs = self.gbs.copy()
         gbs['type'] = 'prod'
-        gbs['sendfile_url'] = None
         gbs['doc_root'] = None
         with self.settings(GIFTBOX_SETTINGS=gbs):
-            g = GiftBox(self.request)
-            assert not g.kwargs['sendfile_url']
-            assert not g.kwargs['doc_root']
+            with pytest.raises(ImproperlyConfigured):
+                g = GiftBox(self.request)
+                assert not g.kwargs['doc_root']
 
     def test_kwarg_overrides(self):
         kwargs = {
-            'sendfile_url': 'bar',
             'doc_root': 'baz'
         }
         g = GiftBox(self.request, **kwargs)
-        assert g.kwargs['sendfile_url'] == 'bar'
         assert g.kwargs['doc_root'] == 'baz'
 
     @patch('giftbox.wrappers.HttpResponse')
@@ -72,16 +68,6 @@ class TestGiftBox(TestCase):
         g = GiftBox(self.request)
         g.send('foo', use_magic=False)
         g.wrapper = None
-        with pytest.raises(ImproperlyConfigured):
-            g.send('foo')
-
-        g.wrapper = send_dev_server
-        g.kwargs['doc_root'] = None
-        with pytest.raises(ImproperlyConfigured):
-            g.send('foo')
-
-        del g.kwargs['sendfile_url']
-        g.wrapper = xsendfile
         with pytest.raises(ImproperlyConfigured):
             g.send('foo')
 
@@ -117,12 +103,11 @@ class TestWrappersNoMagic(TestCase):
     @patch('giftbox.wrappers.HttpResponse')
     def test_xsendfile(self, fakeresponse):
         fakeresponse.return_value = {'Content-Type': ''}
-        res = xsendfile(self.request, 'foo', sendfile_url='/bar/',
+        res = xsendfile(self.request, 'foo', doc_root='/bar/',
                         use_magic=False)
         assert fakeresponse.called
         fakeresponse.assert_called_with()
         assert res['X-Sendfile'] == '/bar/foo'
-        assert res['X-Accel-Redirect'] == '/bar/foo'
 
 
 class TestWrappersMagic(TestCase):
@@ -161,13 +146,8 @@ class TestWrappersMagic(TestCase):
         mockflag.return_value = True
         fakeresponse.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
-        res = xsendfile(self.request, 'foo', sendfile_url='/bar/',
+        res = xsendfile(self.request, 'foo',
                         use_magic=True, doc_root='/baz/bam')
         assert fakeresponse.called
-        assert res['X-Sendfile'] == '/bar/foo'
-        assert res['X-Accel-Redirect'] == '/bar/foo'
+        assert res['X-Sendfile'] == '/baz/bam/foo'
         assert res['Content-Type'] == 'text/foo'
-
-        with pytest.raises(ImproperlyConfigured):
-            res = xsendfile(self.request, 'foo', sendfile_url='/bar/',
-                            use_magic=True)
