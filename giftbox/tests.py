@@ -32,7 +32,7 @@ class TestGiftBox(TestCase):
     def test_no_gbs(self):
         with self.settings(GIFTBOX_SETTINGS=None):
             with pytest.raises(ImproperlyConfigured):
-                g = GiftBox(self.request)
+                GiftBox(self.request)
 
     def test_type(self):
         gbs = self.gbs.copy()
