@@ -3,12 +3,12 @@ import pytest
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
-from .box import GiftBox
-from .wrappers import send_dev_server, xsendfile, get_mime
+from giftbox.box import GiftBox
+from giftbox.wrappers import send_dev_server, xsendfile, get_mime
 try:
-    from unittest.mock import MagicMock, patch
+    from unittest.mock import MagicMock, patch, ANY
 except ImportError:
-    from mock import MagicMock, patch
+    from mock import MagicMock, patch, ANY
 
 
 class TestGiftBox(TestCase):
@@ -32,7 +32,7 @@ class TestGiftBox(TestCase):
     def test_no_gbs(self):
         with self.settings(GIFTBOX_SETTINGS=None):
             with pytest.raises(ImproperlyConfigured):
-                g = GiftBox(self.request)
+                GiftBox(self.request)
 
     def test_type(self):
         gbs = self.gbs.copy()
@@ -48,35 +48,40 @@ class TestGiftBox(TestCase):
     def test_assign_none_sendfile_doc_root(self):
         gbs = self.gbs.copy()
         gbs['type'] = 'prod'
-        gbs['sendfile_url'] = None
         gbs['doc_root'] = None
         with self.settings(GIFTBOX_SETTINGS=gbs):
-            g = GiftBox(self.request)
-            assert not g.kwargs['sendfile_url']
-            assert not g.kwargs['doc_root']
+            with pytest.raises(ImproperlyConfigured):
+                g = GiftBox(self.request)
+                assert not g.kwargs['doc_root']
 
     def test_kwarg_overrides(self):
+<<<<<<< HEAD:giftbox/tests.py
         kwargs = {
             'doc_root': 'baz'
         }
+=======
+        kwargs = {'doc_root': 'baz' }
+>>>>>>> develop:tests/tests.py
         g = GiftBox(self.request, **kwargs)
         assert g.kwargs['doc_root'] == 'baz'
 
     @patch('giftbox.wrappers.HttpResponse')
     @patch('giftbox.wrappers.serve')
     def test_send_no_magic(self, mockhttpresponse, testserve):
-        mockhttpresponse = {'Content-Type': ''}
         g = GiftBox(self.request)
         g.send('foo', use_magic=False)
         g.wrapper = None
         with pytest.raises(ImproperlyConfigured):
             g.send('foo')
 
+<<<<<<< HEAD:giftbox/tests.py
         g.wrapper = send_dev_server
         g.kwargs['doc_root'] = None
         with pytest.raises(ImproperlyConfigured):
             g.send('foo')
 
+=======
+>>>>>>> develop:tests/tests.py
     @patch('giftbox.box.GiftBox.send')
     def test_send_call(self, mocksend):
         g = GiftBox(self.request)
@@ -87,11 +92,17 @@ class TestGiftBox(TestCase):
 
     @patch('giftbox.box.send_dev_server')
     @patch('giftbox.box.xsendfile')
-    def test_pass_kwargs(self, dev, sendfile):
+    def test_pass_kwargs(self, mocksendfile, mockdev):
         g = GiftBox(self.request)
         g.send('foo', doc_root='foobar')
-        assert g.kwargs['doc_root'] == 'foobar'
-
+        mocksendfile.assert_called_with(
+            self.request, 
+            'foo', 
+            doc_root='foobar', 
+            has_magic=ANY,
+            use_magic=ANY
+        )
+    
 
 class TestWrappersNoMagic(TestCase):
 
@@ -102,22 +113,31 @@ class TestWrappersNoMagic(TestCase):
     def test_send_dev_server(self, mockserve):
         mockserve.return_value = {'Content-Type': ''}
         res = send_dev_server(self.request, 'foo', doc_root='bar',
-                              use_magic=False)
+                              use_magic=False, has_magic=False)
         assert mockserve.called
         assert res['Content-Disposition'] == 'attachment; filename=foo'
 
     @patch('giftbox.wrappers.HttpResponse')
     def test_xsendfile(self, fakeresponse):
         fakeresponse.return_value = {'Content-Type': ''}
+<<<<<<< HEAD:giftbox/tests.py
         res = xsendfile(self.request, 'foo', use_magic=False)
         assert fakeresponse.called
         fakeresponse.assert_called_with()
         assert res['X-Sendfile'] == 'foo'
+=======
+        res = xsendfile(self.request, 'foo', doc_root='/bar/',
+                        use_magic=False, has_magic=True)
+        assert fakeresponse.called
+        fakeresponse.assert_called_with()
+        assert res['X-Sendfile'] == '/bar/foo'
+>>>>>>> develop:tests/tests.py
 
 
 class TestWrappersMagic(TestCase):
 
     def setUp(self):
+        pytest.importorskip('magic')
         self.request = MagicMock()
 
     def test_get_mime(self):
@@ -129,28 +149,25 @@ class TestWrappersMagic(TestCase):
         os.remove('foo.txt')
         assert mime == 'text/plain'
 
-    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.serve')
-    def test_send_dev_server(self, mockserve, mockmime, mockflag):
-        mockflag.return_value = True
+    def test_send_dev_server(self, mockserve, mockmime):
         mockserve.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
         res = send_dev_server(self.request, 'foo', doc_root='bar',
-                              use_magic=True)
+                              use_magic=True, has_magic=True)
         assert mockserve.called
         assert res['Content-Disposition'] == 'attachment; filename=foo'
         assert res['Content-Type'] == 'text/foo'
         mockmime.assert_called_with('bar/foo')
 
-    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.HttpResponse')
-    def test_xsendfile(self, fakeresponse, mockmime, mockflag):
+    def test_xsendfile(self, fakeresponse, mockmime):
 
-        mockflag.return_value = True
         fakeresponse.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
+<<<<<<< HEAD:giftbox/tests.py
         res = xsendfile(self.request, 'foo', use_magic=True, doc_root='/baz/bam')
         assert fakeresponse.called
         assert res['X-Sendfile'] == 'foo'
@@ -158,3 +175,10 @@ class TestWrappersMagic(TestCase):
 
         with pytest.raises(ImproperlyConfigured):
             res = xsendfile(self.request, 'foo', use_magic=True)
+=======
+        res = xsendfile(self.request, 'foo',
+                        use_magic=True, doc_root='/baz/bam', has_magic=True)
+        assert fakeresponse.called
+        assert res['X-Sendfile'] == '/baz/bam/foo'
+        assert res['Content-Type'] == 'text/foo'
+>>>>>>> develop:tests/tests.py

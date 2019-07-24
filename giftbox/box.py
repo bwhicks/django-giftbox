@@ -12,8 +12,8 @@ class GiftBox(object):
             :func:`~giftbox.wrappers.send_dev_server` or
             :func:`~giftbox.wrappers.xsendfile`
         kwargs (dict): A dictionary containing kwargs passed to the object,
-            used by the wrappers to accept settings whether from ``settings.py``
-            or :class:`GiftBox` object on creation.
+            used by the wrappers to accept settings whether
+            from ``settings.py`` or :class:`GiftBox` object on creation.
     """
 
     def __init__(self, request, **kwargs):
@@ -21,7 +21,8 @@ class GiftBox(object):
         Create a :class:`GiftBox` instance.
 
         Args:
-            request (HttpRequest): Instance of :class:`django.http.HttpRequest`.
+            request (HttpRequest): Instance of
+            :class:`django.http.HttpRequest`.
 
         Keyword Args:
             sendfile_url (str): Xsendfile url to pass as part of http response.
@@ -53,37 +54,48 @@ class GiftBox(object):
             elif gbs['type'] == 'prod':
                 self.wrapper = xsendfile
 
-        self.kwargs['sendfile_url'] = gbs['sendfile_url'] \
-            if 'sendfile_url' in gbs else None
-
         self.kwargs['doc_root'] = gbs['doc_root'] \
             if 'doc_root' in gbs else None
 
-        # Default to using python-magic if installed
-        self.kwargs['use_magic'] = gbs['use_magic'] \
-            if 'use_magic' in gbs else True
+        try:
+            import magic
+            self.kwargs['has_magic'] = True
+            if 'use_magic' not in kwargs: 
+                kwargs['use_magic'] = True
+        except ImportError:
+            if 'use_magic' in self.kwargs and self.kwargs['use_magic']:
+                raise ImproperlyConfigured('To enable magic for mime-typing, install python-magic and libmagic.')
+            self.kwargs['has_magic'] = False
+            self.kwargs['use_magic'] = False
 
         self.kwargs.update(kwargs)
+
+        if not self.kwargs['doc_root']:
+            raise ImproperlyConfigured('You must specify a "doc_root"')
 
     def send(self, filename, **kwargs):
         """
         Return an HTTP Response to send the specified file.
 
         Args:
-            filename (str): The name of a file to serve.
 
+<<<<<<< HEAD
         Keyword Args:
             doc_root (str): Valid filepath for Django's development server
                                 to 'xsend' files.
+=======
+            filename (str): The name of a file to serve.
+            doc_root (str): Valid path for Django's server to 'xsend'
+            use_magic (bool): whether or not to pythonmagic
+>>>>>>> develop
         """
-
-        send_func = self.wrapper
-        obj_kwargs = self.kwargs
-
+        obj_kwargs = self.kwargs.copy()
+        obj_kwargs.update(kwargs)
         # If somehow a wrapper hasn't been set yet.
-        if not send_func:
+        if not self.wrapper:
             raise ImproperlyConfigured('You must specify a wrapper before '
                                        'using send.')
+<<<<<<< HEAD
 
         # Update kwargs based on any passed to send
         if kwargs:
@@ -97,3 +109,6 @@ class GiftBox(object):
 
 
         return send_func(self.request, filename, **obj_kwargs)
+=======
+        return self.wrapper(self.request, filename, **obj_kwargs)
+>>>>>>> develop

@@ -1,14 +1,6 @@
 import os
-from django.core.exceptions import ImproperlyConfigured
 from django.views.static import serve
 from django.http import HttpResponse
-
-GOT_MAGIC = False
-try:
-    import magic
-    GOT_MAGIC = True
-except ImportError:
-    pass
 
 
 def get_mime(filepath):
@@ -21,10 +13,10 @@ def get_mime(filepath):
     Returns:
         str: Returns a string representing the mime type of the file.
     """
-
+    import magic
     return magic.from_file(filepath, mime=True)
 
-
+        
 def send_dev_server(request, filename, **kwargs):
     """
     Send a file using Django's development server.
@@ -33,23 +25,17 @@ def send_dev_server(request, filename, **kwargs):
         request (HttpRequest): An instance of :class:`django.http.HttpRequest`
         filename (str): name of the file to be served
 
-    Keyword Args:
-        doc_root (str): Valid path for Django's server to 'xsend'
-
     Returns:
         FileResponse: An instance of class:`django.http.FileResponse`.
 
     """
-    doc_root = kwargs['doc_root']
-
-    response = serve(request, filename, doc_root)
+    response = serve(request, filename, kwargs['doc_root'])
     # Django tries to pick an intelligent mime type
     # If magic, use it to help out
-    if kwargs['use_magic']:
-        if GOT_MAGIC:
-            response['Content-Type'] = get_mime(
-                os.path.join(doc_root, filename)
-            )
+    if kwargs['use_magic'] and kwargs['has_magic']:
+        response['Content-Type'] = get_mime(
+           os.path.join(kwargs['doc_root'], filename)
+        )
     response['Content-Disposition'] = ('attachment; filename=%s'
                                        % filename.split('/')[-1])
     return response
@@ -63,28 +49,20 @@ def xsendfile(request, filename, **kwargs):
         request (HttpRequest): An instance of :class:`django.http.HttpRequest`
         filename (str): Name of the file to be served
 
-    Keyword Args:
-
-        doc_root (str): Valid path to folder containing file, for magic to read
-
     Returns:
         HttpResponse: An instance of :class:`django.http.HttpResponse`.
-
+ 
     """
 
     response = HttpResponse()
-
-    response['X-Sendfile'] = filename
+    path = os.path.join(kwargs['doc_root'], filename)
+    response['X-Sendfile'] = path
     response['Content-Disposition'] = 'attachment; filename=%s' % filename
     # Delete default 'Content-Type', which indicates HTML, and let web server
     # try to get it right.
     del response['Content-Type']
     # If magic available and not explicitly disabled, use it to help out
-    if kwargs['use_magic']:
-        if GOT_MAGIC:
-            if 'doc_root' not in kwargs or not kwargs['doc_root']:
-                raise ImproperlyConfigured('If using python-magic, '
-                                           '"doc_root" required.')
-            doc_root = kwargs['doc_root']
-            response['Content-Type'] = get_mime(os.path.join(doc_root, filename))
+    if kwargs['use_magic'] and kwargs['has_magic']: 
+        response['Content-Type'] = get_mime(os.path.join(kwargs['doc_root'], 
+                                            filename))
     return response

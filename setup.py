@@ -21,8 +21,12 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 about = {}
-with open(path.join(here, 'giftbox', '__version__.py')) as f:
+with open(path.join(here, 'giftbox', 'version.py')) as f:
     exec(f.read(), about)
+
+
+TESTS_REQUIRE = ['pytest', 'pytest-django', 'pytest-cov',
+                 'mock', 'python-magic', 'tox', 'tox-travis']
 
 
 setup(
@@ -66,21 +70,22 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Framework :: Django',
+        'Framework :: Django :: 2.2',
         'Framework :: Django :: 1.11',
         'Framework :: Django :: 1.8',
     ],
 
     # What does your project relate to?
-    keywords='sendfile, x-accel-http, nginx, apache',
+    keywords='sendfile, apache',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-django', 'pytest-cov',
-                   'mock', 'python-magic'],
+    tests_require=TESTS_REQUIRE,
     install_requires=['django>=1.8'],
     extras_require={
-        'test': ['pytest', 'pytest-django', 'pytest-cov', 'mock',
-                 'python-magic'],
+        'test': TESTS_REQUIRE,
+        'develop': TESTS_REQUIRE + ['twine']
     },
 
 )
