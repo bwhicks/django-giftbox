@@ -6,5 +6,6 @@ python:
 install:
   - sudo apt-get update
   - sudo apt-get install libmagic-dev
-  - pip install tox-travis
-script: tox
+script: 
+  - tox
+  - codecov
