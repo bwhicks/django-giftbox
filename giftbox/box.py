@@ -54,19 +54,19 @@ class GiftBox(object):
             elif gbs['type'] == 'prod':
                 self.wrapper = xsendfile
 
-        self.kwargs['doc_root'] = gbs['doc_root'] \
-            if 'doc_root' in gbs else None
+        self.kwargs['doc_root'] = gbs.get('doc_root', None)
+        self.kwargs['use_magic'] = gbs.get('use_magic', None)
 
         try:
             import magic
             self.kwargs['has_magic'] = True
-            if 'use_magic' not in kwargs: 
-                kwargs['use_magic'] = True
+            # set if unspecified since magic has been detected
+            if self.kwargs['use_magic'] is None:
+                self.kwargs['use_magic'] = True
         except ImportError:
-            if 'use_magic' in self.kwargs and self.kwargs['use_magic']:
+            if self.kwargs['use_magic']:
                 raise ImproperlyConfigured('To enable magic for mime-typing, install python-magic and libmagic.')
             self.kwargs['has_magic'] = False
-            self.kwargs['use_magic'] = False
 
         self.kwargs.update(kwargs)
 

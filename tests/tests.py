@@ -23,6 +23,18 @@ class TestGiftBox(TestCase):
         assert g.request == self.request
         assert g.wrapper == xsendfile
         assert g.kwargs['doc_root'] == 'foo'
+    
+    def test_init_magic_not_present(self):
+        try:
+            import magic
+            pytest.skip("Magic present, can't test missing situations")
+        except ImportError:
+            with self.settings(GIFTBOX_SETTINGS={
+                'doc_root': 'foo',
+                'use_magic': True
+            }):
+                with pytest.raises(ImproperlyConfigured):
+                    GiftBox(self.request)
 
     def test_force_dev_server(self):
         self.request.META.get.return_value = 'WSGIServer'
