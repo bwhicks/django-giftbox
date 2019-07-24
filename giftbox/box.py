@@ -25,7 +25,6 @@ class GiftBox(object):
             :class:`django.http.HttpRequest`.
 
         Keyword Args:
-            sendfile_url (str): Xsendfile url to pass as part of http response.
             doc_root (str): Valid filepath for Django's development server
                                 to 'xsend' files.
         """

@@ -16,22 +16,27 @@ Description
 
 django-giftbox is an app for the Django web framework that provides an easy
 wrapper for X-Sendfile functionality in Apache.
+
 This lets users protect files by not allowing them to be downloaded
 directly, but allows Django to programmatically send a redirect and let the
 webserver handle the transaction.
 
-The current implementation is compatible with Django 1.8+ (tested against LTS
+The current implementation is compatible with Django 1.11+ (tested against LTS
 releases including 2.2) and py2/3 compatible.
 
-The only required dependency is Django itself.
+The only required dependency is Django itself and mod_xsendfile_ installed for 
+Apache.
+
+.. _mod_xsendfile: https://tn123.org/mod_xsendfile/
 
 Installation
 ------------
 
-Until such time, however, you can
-clone from ``master`` or ``develop`` branches.
+You can simply download from PyPi using pip::
 
-To install via ``pip``, use something like this::
+  pip install django-giftbox
+
+Or feel free to clone from ``master`` or ``develop`` branches::
 
     pip install git+https://github.com/bwhicks/django-giftbox.git@master#egg=giftbox
 
@@ -61,6 +66,15 @@ with some sane defaults for one of those settings.
     'doc_root': '/path/to/protected/files',
   }
 
+A corresponding Apache entry in a Vhost or other configuration would be::
+
+  XSendFile on
+  XSendFilePath /path/to/protected/files
+
+The major advantage of this is that you can block regular access to this path
+or leave it out of Apache's docroot.
+
+
 Optional python-magic
 =====================
 
@@ -83,7 +97,7 @@ In a view or view function, create an instance as follows::
 
   def my_view_func(request):
     box = GiftBox(request)
-    return box.send('file.name')
+    return box.send('filename')
 
 
 ``box`` in this case is an instance of ``GiftBox``, which can have its ``self.kwargs``
@@ -97,15 +111,14 @@ can use its own MIME handling to set the type appropriately (unless you use
 the optional ``python-magic`` functionality). You can manually
 specify this before returning the ``HttpResponse`` object, too.
 
-All of this depends on a correct server setup for Apache, nginx, etc. that
+All of this depends on a correct server setup for Apache that
 properly creates a protected url that allows sendfile type requests.
 
 The object allows flexible settings of virtually every kwarg at any point. If
-you need to set the ``sendfile_url`` or ``doc_root`` dynamically, either when you
+you need to set the  `doc_root`` dynamically, either when you
 instantiate the box or when you call ``Giftbox.send()``, you can do that.
 
 Tests
 =====
 
-All tests can be run using ``tox`` or ``python setup.py pytest``. A sample
-``testettings.py`` is included in the package for Django compatibility.
+All tests can be run using ``tox`` or ``python setup.py pytest``.
