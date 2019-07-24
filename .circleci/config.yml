@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  toxify:
+  build:
     docker:
       - image: circleci/python:3.6.1
     steps:
@@ -9,5 +9,3 @@ jobs:
           name: Install libmagic
           command: sudo apt-get install libmagic
       - run: pip install tox && tox
-workflows:
-  version: 2
