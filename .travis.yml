@@ -4,5 +4,6 @@ install:
   - sudo apt-get update
   - sudo apt-get install libmagic-dev
 script: 
+  - pip install tox codecov
   - tox
   - codecov
