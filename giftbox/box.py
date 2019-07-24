@@ -79,15 +79,9 @@ class GiftBox(object):
 
         Args:
 
-<<<<<<< HEAD
-        Keyword Args:
-            doc_root (str): Valid filepath for Django's development server
-                                to 'xsend' files.
-=======
             filename (str): The name of a file to serve.
             doc_root (str): Valid path for Django's server to 'xsend'
             use_magic (bool): whether or not to pythonmagic
->>>>>>> develop
         """
         obj_kwargs = self.kwargs.copy()
         obj_kwargs.update(kwargs)
@@ -95,20 +89,4 @@ class GiftBox(object):
         if not self.wrapper:
             raise ImproperlyConfigured('You must specify a wrapper before '
                                        'using send.')
-<<<<<<< HEAD
-
-        # Update kwargs based on any passed to send
-        if kwargs:
-            obj_kwargs.update(kwargs)
-
-        # If no doc_root for dev server, raise an error
-        if send_func is send_dev_server:
-            if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
-                raise ImproperlyConfigured('GiftBox requires "doc_root" be set '
-                                       'when using dev server.')
-
-
-        return send_func(self.request, filename, **obj_kwargs)
-=======
         return self.wrapper(self.request, filename, **obj_kwargs)
->>>>>>> develop
