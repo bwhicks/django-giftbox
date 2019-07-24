@@ -1,9 +1,12 @@
 language: python
-python: "3.7"
+python: 
+  - "2.7"
+  - "3.6"
+  - "3.7"
 install:
   - sudo apt-get update
   - sudo apt-get install libmagic-dev
 script: 
-  - pip install tox codecov
+  - pip install tox codecov tox-travis
   - tox
   - codecov
