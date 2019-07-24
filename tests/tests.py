@@ -3,12 +3,12 @@ import pytest
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
-from .box import GiftBox
-from .wrappers import send_dev_server, xsendfile, get_mime
+from giftbox.box import GiftBox
+from giftbox.wrappers import send_dev_server, xsendfile, get_mime
 try:
-    from unittest.mock import MagicMock, patch
+    from unittest.mock import MagicMock, patch, ANY
 except ImportError:
-    from mock import MagicMock, patch
+    from mock import MagicMock, patch, ANY
 
 
 class TestGiftBox(TestCase):
@@ -55,16 +55,13 @@ class TestGiftBox(TestCase):
                 assert not g.kwargs['doc_root']
 
     def test_kwarg_overrides(self):
-        kwargs = {
-            'doc_root': 'baz'
-        }
+        kwargs = {'doc_root': 'baz' }
         g = GiftBox(self.request, **kwargs)
         assert g.kwargs['doc_root'] == 'baz'
 
     @patch('giftbox.wrappers.HttpResponse')
     @patch('giftbox.wrappers.serve')
     def test_send_no_magic(self, mockhttpresponse, testserve):
-        mockhttpresponse = {'Content-Type': ''}
         g = GiftBox(self.request)
         g.send('foo', use_magic=False)
         g.wrapper = None
@@ -81,11 +78,17 @@ class TestGiftBox(TestCase):
 
     @patch('giftbox.box.send_dev_server')
     @patch('giftbox.box.xsendfile')
-    def test_pass_kwargs(self, dev, sendfile):
+    def test_pass_kwargs(self, mocksendfile, mockdev):
         g = GiftBox(self.request)
         g.send('foo', doc_root='foobar')
-        assert g.kwargs['doc_root'] == 'foobar'
-
+        mocksendfile.assert_called_with(
+            self.request, 
+            'foo', 
+            doc_root='foobar', 
+            has_magic=ANY,
+            use_magic=ANY
+        )
+    
 
 class TestWrappersNoMagic(TestCase):
 
@@ -96,7 +99,7 @@ class TestWrappersNoMagic(TestCase):
     def test_send_dev_server(self, mockserve):
         mockserve.return_value = {'Content-Type': ''}
         res = send_dev_server(self.request, 'foo', doc_root='bar',
-                              use_magic=False)
+                              use_magic=False, has_magic=False)
         assert mockserve.called
         assert res['Content-Disposition'] == 'attachment; filename=foo'
 
@@ -104,7 +107,7 @@ class TestWrappersNoMagic(TestCase):
     def test_xsendfile(self, fakeresponse):
         fakeresponse.return_value = {'Content-Type': ''}
         res = xsendfile(self.request, 'foo', doc_root='/bar/',
-                        use_magic=False)
+                        use_magic=False, has_magic=True)
         assert fakeresponse.called
         fakeresponse.assert_called_with()
         assert res['X-Sendfile'] == '/bar/foo'
@@ -113,6 +116,7 @@ class TestWrappersNoMagic(TestCase):
 class TestWrappersMagic(TestCase):
 
     def setUp(self):
+        pytest.importorskip('magic')
         self.request = MagicMock()
 
     def test_get_mime(self):
@@ -124,30 +128,26 @@ class TestWrappersMagic(TestCase):
         os.remove('foo.txt')
         assert mime == 'text/plain'
 
-    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.serve')
-    def test_send_dev_server(self, mockserve, mockmime, mockflag):
-        mockflag.return_value = True
+    def test_send_dev_server(self, mockserve, mockmime):
         mockserve.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
         res = send_dev_server(self.request, 'foo', doc_root='bar',
-                              use_magic=True)
+                              use_magic=True, has_magic=True)
         assert mockserve.called
         assert res['Content-Disposition'] == 'attachment; filename=foo'
         assert res['Content-Type'] == 'text/foo'
         mockmime.assert_called_with('bar/foo')
 
-    @patch('giftbox.wrappers.GOT_MAGIC')
     @patch('giftbox.wrappers.get_mime')
     @patch('giftbox.wrappers.HttpResponse')
-    def test_xsendfile(self, fakeresponse, mockmime, mockflag):
+    def test_xsendfile(self, fakeresponse, mockmime):
 
-        mockflag.return_value = True
         fakeresponse.return_value = {'Content-Type': ''}
         mockmime.return_value = 'text/foo'
         res = xsendfile(self.request, 'foo',
-                        use_magic=True, doc_root='/baz/bam')
+                        use_magic=True, doc_root='/baz/bam', has_magic=True)
         assert fakeresponse.called
         assert res['X-Sendfile'] == '/baz/bam/foo'
         assert res['Content-Type'] == 'text/foo'

@@ -57,9 +57,16 @@ class GiftBox(object):
         self.kwargs['doc_root'] = gbs['doc_root'] \
             if 'doc_root' in gbs else None
 
-        # Default to using python-magic if installed
-        self.kwargs['use_magic'] = gbs['use_magic'] \
-            if 'use_magic' in gbs else True
+        try:
+            import magic
+            self.kwargs['has_magic'] = True
+            if 'use_magic' not in kwargs: 
+                kwargs['use_magic'] = True
+        except ImportError:
+            if 'use_magic' in self.kwargs and self.kwargs['use_magic']:
+                raise ImproperlyConfigured('To enable magic for mime-typing, install python-magic and libmagic.')
+            self.kwargs['has_magic'] = False
+            self.kwargs['use_magic'] = False
 
         self.kwargs.update(kwargs)
 
@@ -71,43 +78,15 @@ class GiftBox(object):
         Return an HTTP Response to send the specified file.
 
         Args:
+
             filename (str): The name of a file to serve.
-
-        Keyword Args:
-            doc_root (str): Valid filepath for Django's development server
-                                to 'xsend' files.
+            doc_root (str): Valid path for Django's server to 'xsend'
+            use_magic (bool): whether or not to pythonmagic
         """
-
-        send_func = self.wrapper
-        obj_kwargs = self.kwargs
-
+        obj_kwargs = self.kwargs.copy()
+        obj_kwargs.update(kwargs)
         # If somehow a wrapper hasn't been set yet.
-        if not send_func:
+        if not self.wrapper:
             raise ImproperlyConfigured('You must specify a wrapper before '
                                        'using send.')
-
-        # Update kwargs based on any passed to send
-        if kwargs:
-            obj_kwargs.update(kwargs)
-
-<<<<<<< HEAD
-        # If no doc_root for dev server, raise an error
-        if send_func is send_dev_server:
-            if 'doc_root' not in obj_kwargs or not obj_kwargs['doc_root']:
-                raise ImproperlyConfigured(
-                    'GiftBox requires "doc_root" be set '
-                    'when using dev server.'
-                )
-
-        # If no send_file for xsendfile, raise an error
-        if send_func is xsendfile:
-            if 'sendfile_url' not in obj_kwargs or \
-                    not obj_kwargs['sendfile_url']:
-                raise ImproperlyConfigured(
-                    'Giftbox requires "sendfile_url" be set when not running '
-                    'the development server.'
-                )
-
-=======
->>>>>>> 6b1d2fcef0071b347b3d8f665d4d2829d3f796b7
-        return send_func(self.request, filename, **obj_kwargs)
+        return self.wrapper(self.request, filename, **obj_kwargs)
