@@ -37,7 +37,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=about['__version__'],
 
-    description='A package that includes sendfile capabilities for Django',
+    description='A package that includes xsendfile capabilities for Django',
     long_description=long_description,
 
     # The project's main homepage.

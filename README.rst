@@ -63,7 +63,7 @@ Usageo serve via Giftbox are located. This can be a relative
 path under your vhost's doc root or an absolute file path.
 
 You can also specify these at run time, but you must least have ``GIFTBOX_SETTINGS``
-with some sane defaults for one of those settings.
+with some sane defaults for one of those settings::
 
   GIFTBOX_SETTINGS = {
     'type': 'prod',  # will still detect dev server locally
