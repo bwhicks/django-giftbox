@@ -40,6 +40,9 @@ To install extra ``python-magic`` functionality::
 
   pip install django-giftbox[magic]
 
+You'll need to have ``libmagic`` (or ``libmagic-dev`` on many Linux distributions) 
+installed to use this, otherwise ``python-magic`` will break.
+
 Or feel free to clone from the ``master`` branch::
 
     pip install git+https://github.com/bwhicks/django-giftbox.git@master#egg=giftbox
