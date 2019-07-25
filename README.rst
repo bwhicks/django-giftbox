@@ -36,7 +36,11 @@ You can simply download from PyPi using pip::
 
   pip install django-giftbox
 
-Or feel free to clone from ``master`` or ``develop`` branches::
+To install extra ``python-magic`` functionality::
+
+  pip install django-giftbox[magic]
+
+Or feel free to clone from the ``master`` branch::
 
     pip install git+https://github.com/bwhicks/django-giftbox.git@master#egg=giftbox
 

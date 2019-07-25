@@ -84,6 +84,7 @@ setup(
     tests_require=TESTS_REQUIRE,
     install_requires=['django>=1.8'],
     extras_require={
+        'magic': ['python-magic']
         'test': TESTS_REQUIRE,
         'develop': TESTS_REQUIRE + ['twine']
     },
